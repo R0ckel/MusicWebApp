@@ -1,0 +1,38 @@
+﻿@model Author
+@{
+    ViewData["Title"] = $"Create new author";
+}
+<div class="text-center">
+    <form method="post" asp-controller="Authors" asp-action="Create">
+        <table class="table chessed">
+            <thead class="bg-opacity-25 bg-success">
+                <tr>
+                    <th class="col-4">Property</th>
+                    <th class="col-4">Value</th>
+                    <th class="col-4">Info</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>
+                        <label asp-for="Name"></label>
+                    </td>
+                    <td>
+                        <input type="text" asp-for="Name" />
+                    </td>
+                    <td>
+                        <span asp-validation-for="Name" class="text-danger"></span>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <input type="submit" class="btn btn-success" value="Create" />
+    </form>
+    <br />
+    <div>
+        <form method="get" asp-controller="Authors" asp-action="Index">
+            <input type="submit" class="btn btn-secondary col-md-2" value="Return to authors">
+        </form>
+    </div>
+</div>
+<partial name="_ValidationScriptsPartial" />

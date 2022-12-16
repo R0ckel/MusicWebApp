@@ -1,0 +1,106 @@
+﻿@model GenresViewModel
+@{
+    ViewData["Title"] = "Genres";
+}
+
+<div class="text-center">
+    <form method="get" class="input-margined">
+        <p class="col-md-5 height-evenly d-inline-block">
+            <label asp-for="Filter.MinTracks"></label>
+            <input type="number" min="0" asp-for="Filter.MinTracks" placeholder="e.g. 2" />
+        </p>
+        <p class="col-md-5 height-evenly d-inline-block">
+            <label asp-for="Filter.MaxTracks"></label>
+            <input type="number" min="0" asp-for="Filter.MaxTracks" 
+                value="@(Model.Filter.MaxTracks == int.MaxValue?"":Model.Filter.MaxTracks)" placeholder="e.g. 10" />
+        </p>
+        <p class="col-md-5 height-evenly d-inline-block">
+            <label asp-for="Filter.Name"></label>
+            <input type="text" asp-for="Filter.Name" placeholder="Name template" />
+        </p>
+        <input type="submit" class="btn-sm btn-primary col-md-5 d-inline-block height-evenly" value="Search" />
+    </form>
+    @if (Model.Genres.Count() == 0)
+    {
+        <h1 class="text-danger">No genres found</h1>
+        <h3 class="text-primary">Check your filters and try again!</h3>
+    }
+    else
+    {
+        <table class="table chessed">
+            <thead class="bg-opacity-50 bg-primary">
+                <tr>
+                    <th class="col-1">
+                        @Html.DisplayNameFor(m=>m.Genres.First().Id)
+                    </th>
+                    <th class="col-5">
+                        @Html.DisplayNameFor(m=>m.Genres.First().Name)
+                    </th>
+                    <th class="col-1">
+                        @Html.DisplayNameFor(m=>m.Genres.First().TrackCount)
+                    </th>
+                    <th colspan="3" class="col-5">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var genre in Model.Genres)
+                {
+                    <tr>
+                        <td class='bg-primary bg-opacity-25'>
+                            @genre.Id
+                        </td>
+                        <td>
+                            @genre.Name
+                        </td>
+                        <td>
+                            @genre.TrackCount
+                        </td>
+                        <td class="list-inline action-list">
+                            <form method="get" asp-controller="Genres" asp-action="Show" asp-route-id="@genre.Id">
+                                <input type="submit" class="btn btn-info col-md-12" value="Show">
+                            </form>
+                            @if (User.IsInRole("Admin"))
+                            {
+                                <form method="get" asp-controller="Genres" asp-action="Update" asp-route-id="@genre.Id">
+                                    <input type="submit" class="btn btn-warning col-md-12" value="Edit">
+                                </form>
+                                <form method="post" asp-controller="Genres" asp-action="Delete" asp-route-id="@genre.Id"
+                          onsubmit="return confirm('@($"Are you sure want to delete genre {genre.Name}?")');">
+                                    <input type="submit" class="btn btn-danger col-md-12" value="Delete">
+                                </form>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+        @if (Model.MaxPage != 1)
+        {
+            <nav>
+                <ul class="pagination justify-content-center">
+                    <li class="page-item @(Model.CurrentPage == 1?"disabled user-select-none":"")">
+                        <a class="page-link" asp-route-page="@(Model.CurrentPage - 1)">
+                            <img src="/images/chevron-left.svg" />
+                        </a>
+                    </li>
+                    @for (int i = Math.Max(1, Model.CurrentPage - 3); i <= Math.Min(Model.MaxPage, Model.CurrentPage + 3); i++)
+                    {
+                        <li class="page-item @(i == Model.CurrentPage?"active":"")">
+                            <a class="page-link" asp-route-page="@i">@i</a>
+                        </li>
+                    }
+                    <li class="page-item @(Model.CurrentPage == Model.MaxPage?"disabled user-select-none":"")">
+                        <a class="page-link" asp-route-page="@(Model.CurrentPage + 1)">
+                            <img src="/images/chevron-right.svg" />
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        }
+
+        <form method="get" asp-controller="Genres" asp-action="Create">
+            <input type="submit" class="btn btn-success col-md-12" value="Create">
+        </form>
+    }
+</div>

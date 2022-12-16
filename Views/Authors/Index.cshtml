@@ -1,0 +1,89 @@
+﻿@model AuthorsViewModel
+@{
+    ViewData["Title"] = "Authors";
+}
+
+<div class="text-center">
+    <form method="get">
+        <p class="col-md-8 offset-md-2 height-evenly">
+            <input type="text" asp-for="Filter.Name" placeholder="Name template" />
+            <input type="submit" class="btn-sm col-md-2 btn-primary" value="Search" />
+        </p>
+    </form>
+    @if (Model.Authors.Count() == 0)
+    {
+        <h1 class="text-danger">No authors found</h1>
+        <h3 class="text-primary">Check your filters and try again!</h3>
+    }
+    else
+    {
+        <table class="table chessed">
+            <thead class="bg-opacity-50 bg-primary">
+                <tr>
+                    <th class="col-1">
+                        @Html.DisplayNameFor(m=>m.Authors.First().Id)
+                    </th>
+                    <th class="col-6">
+                        @Html.DisplayNameFor(m=>m.Authors.First().Name)
+                    </th>
+                    <th colspan="3" class="col-5">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var author in Model.Authors)
+                {
+                    <tr>
+                        <td class='bg-primary bg-opacity-25'>
+                            @author.Id
+                        </td>
+                        <td>
+                            @author.Name
+                        </td>
+                        <td class="list-inline action-list">
+                            <form method="get" asp-controller="Authors" asp-action="Show" asp-route-id="@author.Id">
+                                <input type="submit" class="btn btn-info col-md-12" value="Show">
+                            </form>
+                            @if (User.IsInRole("Admin")){
+                                <form method="get" asp-controller="Authors" asp-action="Update" asp-route-id="@author.Id">
+                                    <input type="submit" class="btn btn-warning col-md-12" value="Edit">
+                                </form>
+                                <form method="post" asp-controller="Authors" asp-action="Delete" asp-route-id="@author.Id"
+                            onsubmit="return confirm('@($"Are you sure want to delete author {author.Name}?")');">
+                                    <input type="submit" class="btn btn-danger col-md-12" value="Delete">
+                                </form>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+        @if (Model.MaxPage != 1)
+        {
+            <nav>
+                <ul class="pagination justify-content-center">
+                    <li class="page-item @(Model.CurrentPage == 1?"disabled user-select-none":"")">
+                        <a class="page-link" asp-route-page="@(Model.CurrentPage - 1)">
+                            <img src="/images/chevron-left.svg" />
+                        </a>
+                    </li>
+                    @for (int i = Math.Max(1, Model.CurrentPage - 3); i <= Math.Min(Model.MaxPage, Model.CurrentPage + 3); i++)
+                    {
+                        <li class="page-item @(i == Model.CurrentPage?"active":"")">
+                            <a class="page-link" asp-route-page="@i">@i</a>
+                        </li>
+                    }
+                    <li class="page-item @(Model.CurrentPage == Model.MaxPage?"disabled user-select-none":"")">
+                        <a class="page-link" asp-route-page="@(Model.CurrentPage + 1)">
+                            <img src="/images/chevron-right.svg" />
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        }
+
+        <form method="get" asp-controller="Authors" asp-action="Create">
+            <input type="submit" class="btn btn-success col-md-12" value="Create">
+        </form>
+    }
+</div>

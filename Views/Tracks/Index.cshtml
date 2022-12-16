@@ -1,0 +1,182 @@
+﻿@model TracksViewModel
+@{
+    ViewData["Title"] = "Tracks";
+}
+
+<div class="text-center">
+    <form method="get" class="input-margined">
+        <p class="col-md-5 height-evenly d-inline-block">
+            <label asp-for="Filter.Name"></label>
+            <input type="text" asp-for="Filter.Name" placeholder="Name template" />
+        </p>
+        <p class="col-md-5 height-evenly d-inline-block">
+            <label asp-for="Filter.Author"></label>
+            <input type="text" asp-for="Filter.Author" placeholder="Name template" />
+        </p>
+        <p class="col-md-5 height-evenly d-inline-block">
+            <label asp-for="Filter.MinYear"></label>
+            <input type="number" min="0" max="@(DateTime.Now.Year + 1)" asp-for="Filter.MinYear" placeholder="e.g. 2012" />
+        </p>
+        <p class="col-md-5 height-evenly d-inline-block">
+            <label asp-for="Filter.MaxYear"></label>
+            <input type="number" min="0" max="@(DateTime.Now.Year + 1)"
+                   value="@(Model.Filter.MaxYear == int.MaxValue?"":Model.Filter.MaxYear)" asp-for="Filter.MaxYear" placeholder="e.g. 2022" />
+        </p>
+        <p class="col-md-5 height-evenly d-inline-block">
+            <label asp-for="Filter.Album"></label>
+            <input type="text" asp-for="Filter.Album" placeholder="Name template" />
+        </p>
+        <p class ="col-md-5 height-evenly d-inline-block">
+            <select asp-for="Filter.Genre">
+                <option value="0">Any genre</option>
+                @foreach (var genre in Model.AllGenres)
+                {
+                    <option value="@(genre.Id)">@genre.Name</option>
+                }
+            </select>
+        </p>
+        <input type="submit" class="btn-sm btn-primary col-md-5 d-inline-block height-evenly" value="Search" />
+    </form>
+    @if (Model.Tracks.Count() == 0)
+    {
+        <h1 class="text-danger">No tracks found</h1>
+        <h3 class="text-primary">Check your filters and try again!</h3>
+    }
+    else
+    {
+        <table class="table chessed">
+            <thead class="bg-opacity-50 bg-primary">
+                <tr>
+                    <th class="col-1">
+                        @Html.DisplayNameFor(m=>m.Tracks.First().Id)
+                    </th>
+                    <th class="col-2">
+                        @Html.DisplayNameFor(m=>m.Tracks.First().Name)
+                    </th>
+                    <th class="col-1">
+                        @Html.DisplayNameFor(m=>m.Tracks.First().Year)
+                    </th>
+                    <th class="col-2">
+                        @Html.DisplayNameFor(m=>m.Tracks.First().Authors)
+                    </th>
+                    <th class="col-1">
+                        @Html.DisplayNameFor(m=>m.Tracks.First().TrackGenre)
+                    </th>
+                    <th class="col-2">
+                        @Html.DisplayNameFor(m=>m.Tracks.First().TrackAlbum)
+                    </th>
+                    <th colspan="3" class="col-3">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var track in Model.Tracks)
+                {
+                    <tr>
+                        <td class='bg-primary bg-opacity-25'>
+                            @track.Id
+                        </td>
+                        <td>
+                            @track.Name
+                        </td>
+                        <td>
+                            @track.Year
+                        </td>
+                        <td>
+                            @foreach (var author in track.Authors)
+                            {
+                                if (author == track.Authors.First())
+                                {
+                                    <span>
+                                        <a asp-controller="Authors" asp-action="Index" asp-route-filter.Name="@author">@author</a>
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span>
+                                        , <a asp-controller="Authors" asp-action="Index" asp-route-filter.Name="@author">@author</a>
+                                    </span>
+                                }
+                            }
+                        </td>
+                        <td>
+                            @track.TrackGenre.Name
+                        </td>
+                        <td>
+                            @track.TrackAlbum.Name
+                        </td>
+                        <td class="list-inline action-list">
+                            <form method="get" asp-controller="Tracks" asp-action="Show" asp-route-id="@track.Id">
+                                <input type="submit" class="btn btn-info col-md-12" value="Show">
+                            </form>
+                            @if (User.IsInRole("Admin"))
+                            {
+                                <form method="get" asp-controller="Tracks" asp-action="Update" asp-route-id="@track.Id">
+                                    <input type="submit" class="btn btn-warning col-md-12" value="Edit">
+                                </form>
+                                <form method="post" asp-controller="Tracks" asp-action="Delete" asp-route-id="@track.Id"
+                          onsubmit="return confirm('@($"Are you sure want to delete track {track.Name}?")');">
+                                    <input type="submit" class="btn btn-danger col-md-12" value="Delete">
+                                </form>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+        @if (Model.MaxPage != 1)
+        {
+            <nav>
+                <ul class="pagination justify-content-center">
+                    <li class="page-item @(Model.CurrentPage == 1?"disabled user-select-none":"")">
+                        <a class="page-link" asp-route-page="@(Model.CurrentPage - 1)"
+                                    asp-all-route-data='new Dictionary<string,string> { 
+                                    { "Filter.Name", Model.Filter.Name },
+                                    { "Filter.MinYear", Model.Filter.MinYear.ToString() },
+                                    { "Filter.MaxYear", Model.Filter.MaxYear.ToString() },
+                                    { "Filter.Album", Model.Filter.Album },
+                                    { "Filter.Author", Model.Filter.Author },
+                                    { "Filter.Genre", Model.Filter.Genre.ToString() },
+                                    { "page", (Model.CurrentPage - 1).ToString() },
+                        }'>
+                            <img src="/images/chevron-left.svg" />
+                        </a>
+                    </li>
+                    @for (int i = Math.Max(1, Model.CurrentPage - 3); i <= Math.Min(Model.MaxPage, Model.CurrentPage + 3); i++)
+                    {
+                        <li class="page-item @(i == Model.CurrentPage?"active":"")">
+                            <a class="page-link" asp-route-page="@i" asp-route-filter="@Model.Filter"
+                                    asp-all-route-data='new Dictionary<string,string> {
+                                    { "Filter.Name", Model.Filter.Name },
+                                    { "Filter.MinYear", Model.Filter.MinYear.ToString() },
+                                    { "Filter.MaxYear", Model.Filter.MaxYear.ToString() },
+                                    { "Filter.Album", Model.Filter.Album },
+                                    { "Filter.Author", Model.Filter.Author },
+                                    { "Filter.Genre", Model.Filter.Genre.ToString() },
+                                    { "page", i.ToString() },
+                        }'>@i</a>
+                        </li>
+                    }
+                    <li class="page-item @(Model.CurrentPage == Model.MaxPage?"disabled user-select-none":"")">
+                        <a class="page-link" asp-route-page="@(Model.CurrentPage + 1)"
+                                    asp-all-route-data='new Dictionary<string,string> {
+                                    { "Filter.Name", Model.Filter.Name },
+                                    { "Filter.MinYear", Model.Filter.MinYear.ToString() },
+                                    { "Filter.MaxYear", Model.Filter.MaxYear.ToString() },
+                                    { "Filter.Album", Model.Filter.Album },
+                                    { "Filter.Author", Model.Filter.Author },
+                                    { "Filter.Genre", Model.Filter.Genre.ToString() },
+                                    { "page", (Model.CurrentPage + 1).ToString() },
+                        }'>
+                            <img src="/images/chevron-right.svg" />
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        }
+
+        <form method="get" asp-controller="Tracks" asp-action="Create">
+            <input type="submit" class="btn btn-success col-md-12" value="Create">
+        </form>
+    }
+</div>

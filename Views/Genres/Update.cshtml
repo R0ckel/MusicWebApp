@@ -1,0 +1,49 @@
+﻿@model Genre
+@{
+    ViewData["Title"] = $"Edit Genre #{Model.Id}";
+}
+
+<div class="text-center">
+    <form method="post" asp-controller="Genres" asp-action="Update">
+        <table class="table chessed">
+            <thead class="bg-opacity-25 bg-warning">
+                <tr>
+                    <th class="col-4">Property</th>
+                    <th class="col-4">Value</th>
+                    <th class="col-4">Info</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>@Html.DisplayNameFor(m => m.Id)</td>
+                    <td>@Model.Id</td>
+                    <td>Autoincrement</td>
+                </tr>
+                <tr>
+                    <td>
+                        <label asp-for="Name"></label>
+                    </td>
+                    <td>
+                        <input type="text" asp-for="Name" />
+                    </td>
+                    <td>
+                        <span asp-validation-for="Name" class="text-danger"></span>
+                    </td>
+                </tr>
+                <tr>
+                    <td>@Html.DisplayNameFor(m => m.TrackCount)</td>
+                    <td>@Model.TrackCount</td>
+                    <td>Calculated value</td>
+                </tr>
+            </tbody>
+        </table>
+        <input type="submit" class="btn btn-warning" value="Update" />
+    </form>
+    <br />
+    <div>
+        <form method="get" asp-controller="Genres" asp-action="Index">
+            <input type="submit" class="btn btn-secondary col-md-2" value="Return to genres">
+        </form>
+    </div>
+</div>
+<partial name="_ValidationScriptsPartial" />

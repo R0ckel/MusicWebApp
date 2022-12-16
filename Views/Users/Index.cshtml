@@ -1,0 +1,98 @@
+﻿@model UsersViewModel
+@{
+    ViewData["Title"] = "Admin Panel";
+}
+
+<div class="text-center">
+    <form method="get">
+        <p class="col-md-8 offset-md-2 height-evenly">
+            <input type="text" asp-for="Filter.Login" placeholder="Login template" />
+            <select asp-for="Filter.Role">
+                <option value="0">Any role</option>
+                @foreach (var role in Enum.GetValues(typeof(Role)))
+                {
+                    <option value="@((int)role)">@role</option>
+                }
+            </select>
+            <input type="submit" class="btn-sm btn-primary" value="Search" />
+        </p>
+    </form>
+    @if (Model.Users.Count() == 0)
+    {
+        <h1 class="text-danger">No users found</h1>
+        <h3 class="text-primary">Check your filters and try again!</h3>
+    }
+    else{
+        <table class="table chessed">
+            <thead class="bg-opacity-50 bg-primary">
+                <tr>
+                    <th class="col-1">
+                        @Html.DisplayNameFor(m=>m.Users.First().Id)
+                    </th>
+                    <th class="col-4">
+                        @Html.DisplayNameFor(m=>m.Users.First().Login)
+                    </th>
+                    <th class="col-2">
+                        @Html.DisplayNameFor(m=>m.Users.First().UserRole)
+                    </th>
+                    <th colspan="3" class="col-5">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var user in Model.Users)
+                {
+                    <tr @(user.Login == User.Identity.Name?$"class=selected":"")>
+                        <td class='bg-primary bg-opacity-25'>
+                            @user.Id
+                        </td>
+                        <td>
+                            @user.Login
+                        </td>
+                        <td>
+                            @user.UserRole
+                        </td>
+                        <td class="list-inline action-list">
+                            <form method="get" asp-controller="Users" asp-action="Show" asp-route-id="@user.Id">
+                                <input type="submit" class="btn btn-info col-md-12" value="Show">
+                            </form>
+                            <form method="get" asp-controller="Users" asp-action="Update" asp-route-id="@user.Id">
+                                <input type="submit" class="btn btn-warning col-md-12" value="Edit">
+                            </form>
+                            @if (User.Identity.Name != user.Login)
+                            {
+                                <form method="post" asp-controller="Users" asp-action="Delete" asp-route-id="@user.Id"
+                                                    onsubmit="return confirm('@($"Are you sure want to delete user {user.Login}?")');">
+                                    <input type="submit" class="btn btn-danger col-md-12" value="Delete">
+                                </form>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+        @if (Model.MaxPage != 1)
+        {
+            <nav>
+                <ul class="pagination justify-content-center">
+                    <li class="page-item @(Model.CurrentPage == 1?"disabled user-select-none":"")">
+                        <a class="page-link" asp-route-page="@(Model.CurrentPage - 1)">
+                            <img src="/images/chevron-left.svg" />
+                        </a>
+                    </li>
+                    @for (int i = Math.Max(1, Model.CurrentPage - 3); i <= Math.Min(Model.MaxPage, Model.CurrentPage + 3); i++)
+                    {
+                        <li class="page-item @(i == Model.CurrentPage?"active":"")">
+                            <a class="page-link" asp-route-page="@i">@i</a>
+                        </li>
+                    }
+                    <li class="page-item @(Model.CurrentPage == Model.MaxPage?"disabled user-select-none":"")">
+                        <a class="page-link" asp-route-page="@(Model.CurrentPage + 1)">
+                            <img src="/images/chevron-right.svg" />
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        }
+    }
+</div>

@@ -1,0 +1,48 @@
+﻿@model User
+@{
+    ViewData["Title"] = $"User #{Model.Id}";
+}
+
+<div class="text-center">
+    <table class="table chessed">
+        <thead class="bg-opacity-25 bg-primary">
+            <tr>
+                <th class="col-6">Property</th>
+                <th class="col-6">Value</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>@Html.DisplayNameFor(m => m.Id)</td>
+                <td>@Model.Id</td>
+            </tr>
+            <tr>
+                <td>@Html.DisplayNameFor(m => m.Login)</td>
+                <td>@Model.Login</td>
+            </tr>
+            <tr>
+                <td>@Html.DisplayNameFor(m => m.Password) (hashed)</td>
+                <td>@Model.Password</td>
+            </tr>
+            <tr>
+                <td>@Html.DisplayNameFor(m => m.UserRole)</td>
+                <td>@Model.UserRole</td>
+            </tr>
+        </tbody>
+    </table>
+    <div class="action-list">
+        <form method="get" asp-controller="Users" asp-action="Update" asp-route-id="@Model.Id">
+            <input type="submit" class="btn btn-warning col-md-12" value="Edit">
+        </form>
+        <form method="post" asp-controller="Users" asp-action="Delete" asp-route-id="@Model.Id"
+              onsubmit="return confirm('@($"Are you sure want to delete user {Model.Login}?")');">
+            <input type="submit" class="btn btn-danger col-md-12" value="Delete">
+        </form>
+    </div>
+    <br />
+    <div>
+        <form method="get" asp-controller="Users" asp-action="Index">
+            <input type="submit" class="btn btn-secondary col-md-2" value="Return to users">
+        </form>
+    </div>
+</div>

@@ -1,0 +1,138 @@
+﻿@model TrackFormViewModel
+@{
+    ViewData["Title"] = $"Create new track";
+}
+
+<div class="text-center">
+    <form method="get" class="height-evenly">
+        <label asp-for="AuthorCount"></label>
+        <input type="number" asp-for="AuthorCount" />
+        <input type="submit" class="btn-sm btn-secondary col-md-2" value="Change" />
+        <span asp-validation-for="AuthorCount" class="text-danger"></span>
+    </form>
+    <br />
+    <form method="post">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <table class="table chessed">
+            <thead class="bg-opacity-25 bg-warning">
+                <tr>
+                    <th class="col-4">Property</th>
+                    <th class="col-4">Value</th>
+                    <th class="col-4">Info</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>@Html.DisplayNameFor(m => m.TrackModel.Id)</td>
+                    <td>@Model.TrackModel.Id</td>
+                    <input type="hidden" asp-for="TrackModel.Id" />
+                    <td>Autoincrement</td>
+                </tr>
+                <tr>
+                    <td>
+                        <label asp-for="TrackModel.Name"></label>
+                    </td>
+                    <td>
+                        <input type="text" name="TrackModel.Name" asp-for="TrackModel.Name" />
+                    </td>
+                    <td>
+                        <span asp-validation-for="TrackModel.Name" class="text-danger"></span>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <label asp-for="TrackModel.Year"></label>
+                    </td>
+                    <td>
+                        <input type="number" name="year" asp-for="TrackModel.Year" />
+                    </td>
+                    <td>
+                        <span asp-validation-for="TrackModel.Year" class="text-danger"></span>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <label asp-for="TrackModel.TrackGenre"></label>
+                    </td>
+                    <td>
+                        <select name="TrackModel.TrackGenre.Id" asp-for="TrackModel.TrackGenre.Id">
+                            @foreach (var genre in Model.AllGenres)
+                            {
+                                @if (Model.TrackModel.TrackAlbum.Id == genre.Id)
+                                {
+                                    <option value="@(genre.Id)" selected>@genre.Name</option>
+                                }
+                                else
+                                {
+                                    <option value="@(genre.Id)">@genre.Name</option>
+                                }
+                            }
+                            <input type="hidden" asp-for="TrackModel.TrackGenre.Name" value="temp" />
+                        </select>
+                    </td>
+                    <td>
+                        <span asp-validation-for="TrackModel.TrackGenre" class="text-danger"></span>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <label asp-for="TrackModel.TrackAlbum"></label>
+                    </td>
+                    <td>
+                        <select name="TrackModel.TrackAlbum.Id" asp-for="TrackModel.TrackAlbum.Id">
+                            <option value="0">None</option>
+                            @foreach (var album in Model.AllAlbums)
+                            {
+                                @if (Model.TrackModel.TrackAlbum.Name == album.Name){
+                                    <option value="@(album.Id)" selected>@album.Name - @album.GetAuthorsAsString()</option>
+                                }
+                                else{
+                                    <option value="@(album.Id)">@album.Name - @album.GetAuthorsAsString()</option>
+                                }
+                            }
+                            <input type="hidden" asp-for="TrackModel.TrackAlbum.Name" value="temp" />
+                        </select>
+                    </td>
+                    <td>
+                        <span asp-validation-for="TrackModel.TrackAlbum" class="text-danger"></span>
+                    </td>
+                </tr>
+                @for (int i = 0; i < Model.AuthorCount; i++)
+                {
+                    <tr>
+                        <td>
+                            Author #@(i + 1)
+                        </td>
+                        <td>
+                            <select name="TrackModel.AuthorsId[@i]" asp-for="TrackModel.AuthorsId" size="5">
+                                <option value="0">None</option>
+                                @foreach (var author in Model.AllAuthors.OrderBy(a => a.Name))
+                                {
+                                    @if (Model.TrackModel.Authors.Count() > i &&
+                                        author.Name == Model.TrackModel.Authors.ElementAt(i))
+                                    {
+                                        <option value="@author.Id" selected>@author.Name</option>
+                                    }
+                                    else
+                                    {
+                                        <option value="@author.Id">@author.Name</option>
+                                    }
+                                }
+                            </select>
+                        </td>
+                        <td>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+        <input type="submit" class="btn btn-warning col-md-12" value="Update" />
+    </form>
+    <br />
+    <div>
+        <form method="get" asp-controller="Tracks" asp-action="Index">
+            <input type="submit" class="btn btn-secondary col-md-2" value="Return to tracks">
+        </form>
+    </div>
+</div>
+<partial name="_ValidationScriptsPartial" />

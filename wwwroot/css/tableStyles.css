@@ -1,0 +1,30 @@
+﻿.action-list {
+    display: flex;
+    justify-content: space-evenly;
+}
+
+.height-evenly {
+    height: 3.1vh;
+    min-height: 35px;
+}
+
+.height-evenly > * {
+    height: 100%;
+    font-size: 1rem;
+}
+
+.chessed tr:nth-child(even) {
+    background: #d7dcf7aa;
+}
+.chessed tr:nth-child(odd) {
+    background: #c1ffdf99;
+}
+
+.selected {
+    background: #bbffbb !important;
+}
+
+.input-margined{
+    margin: 10px;
+}
+

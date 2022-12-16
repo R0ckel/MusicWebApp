@@ -1,0 +1,90 @@
+﻿@model AlbumFormViewModel
+@{
+    ViewData["Title"] = $"Edit Album #{Model.AlbumModel.Id}";
+}
+
+<div class="text-center">
+    <form method="get" class="height-evenly">
+        <label asp-for="AuthorCount"></label>
+        <input type="number" asp-for="AuthorCount" />
+        <input type="submit" class="btn-sm btn-secondary col-md-2" value="Change" />
+        <span asp-validation-for="AuthorCount" class="text-danger"></span>
+    </form>
+    <form method="post">
+        <table class="table chessed">
+            <thead class="bg-opacity-25 bg-warning">
+                <tr>
+                    <th class="col-4">Property</th>
+                    <th class="col-4">Value</th>
+                    <th class="col-4">Info</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>@Html.DisplayNameFor(m => m.AlbumModel.Id)</td>
+                    <td>@Model.AlbumModel.Id</td>
+                    <input type="hidden" asp-for="AlbumModel.Id"/>
+                    <td>Autoincrement</td>
+                </tr>
+                <tr>
+                    <td>
+                        <label asp-for="AlbumModel.Name"></label>
+                    </td>
+                    <td>
+                        <input type="text" asp-for="AlbumModel.Name" />
+                    </td>
+                    <td>
+                        <span asp-validation-for="AlbumModel.Name" class="text-danger"></span>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <label asp-for="AlbumModel.Year"></label>
+                    </td>
+                    <td>
+                        <input type="number" asp-for="AlbumModel.Year" />
+                    </td>
+                    <td>
+                        <span asp-validation-for="AlbumModel.Year" class="text-danger"></span>
+                    </td>
+                </tr>
+                @for(int i = 0; i < Model.AuthorCount; i++){
+                    <tr>
+                        <td>
+                            Author #@(i+1)
+                            <input type="hidden" name="AlbumModel.Authors[@i]" 
+                            value="@(Model.AlbumModel.Authors.Count() > i? Model.AlbumModel.Authors.ElementAt(i):"")">
+                        </td>
+                        <td>
+                            <select name="AlbumModel.AuthorsId[@i]" asp-for="AlbumModel.AuthorsId">
+                                <option value="0">None</option>
+                                @foreach(var author in Model.AllAuthors.OrderBy(a => a.Name)){
+                                    @if (Model.AlbumModel.Authors.Count() > i && 
+                                        author.Name == Model.AlbumModel.Authors.ElementAt(i))
+                                    {
+                                        <option value="@author.Id" selected>@author.Name</option>
+                                    }
+                                    else
+                                    {
+                                        <option value="@author.Id">@author.Name</option>
+                                    }
+                                }
+                            </select>
+                        </td>
+                        <td>
+                            
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+        <input type="submit" class="btn btn-warning col-md-12" value="Update" />
+    </form>
+    <br />
+    <div>
+        <form method="get" asp-controller="Albums" asp-action="Index">
+            <input type="submit" class="btn btn-secondary col-md-2" value="Return to albums">
+        </form>
+    </div>
+</div>
+<partial name="_ValidationScriptsPartial" />

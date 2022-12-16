@@ -1,0 +1,71 @@
+﻿@model User
+@{
+    ViewData["Title"] = $"Edit User #{Model.Id}";
+}
+
+<div class="text-center">
+    <form method="post" asp-controller="Users" asp-action="Update">
+        <table class="table chessed">
+            <thead class="bg-opacity-25 bg-warning">
+                <tr>
+                    <th class="col-4">Property</th>
+                    <th class="col-4">Value</th>
+                    <th class="col-4">Info</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>@Html.DisplayNameFor(m => m.Id)</td>
+                    <td>@Model.Id</td>
+                    <td>Autoincrement</td>
+                </tr>
+                <tr>
+                    <td>
+                        <label asp-for="Login"></label>
+                    </td>
+                    <td>
+                        <input type="text" asp-for="Login"/>
+                    </td>
+                    <td>
+                        <span asp-validation-for="Login" class="text-danger"></span>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <label asp-for="Password"></label>
+                    </td>
+                    <td>
+                        <input type="password" asp-for="Password" value="@string.Empty"/>
+                    </td>
+                    <td>
+                        <span asp-validation-for="Password" class="text-danger"></span>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <label asp-for="UserRole"></label>
+                    </td>
+                    <td>
+                        <select asp-for="UserRole">
+                            @foreach (var role in Enum.GetValues(typeof(Role)))
+                            {
+                                <option value="@((int)role)">@role</option>
+                            }
+                        </select>
+                    </td>
+                    <td>
+                        <span asp-validation-for="UserRole" class="text-danger"></span>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <input type="submit" class="btn btn-warning" value="Update"/>
+    </form>
+    <br />
+    <div>
+        <form method="get" asp-controller="Users" asp-action="Index">
+            <input type="submit" class="btn btn-secondary col-md-2" value="Return to users">
+        </form>
+    </div>
+</div>
+<partial name="_ValidationScriptsPartial" />

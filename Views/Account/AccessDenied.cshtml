@@ -1,0 +1,13 @@
+﻿@{
+    ViewData["Title"] = "Access Denied";
+}
+
+<div class="text-center">
+    <h1 class="text-danger">@ViewData["Title"]</h1>
+    <h2>You don`t have rights to access this resource!</h2>
+    <h2>
+        @foreach(var c in User.Claims){
+            Html.Raw($"{c.Subject} - {c.Type} - {c.Value}");
+        } 
+    </h2>
+</div>

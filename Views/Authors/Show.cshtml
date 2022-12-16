@@ -1,0 +1,43 @@
+﻿@model Author
+@{
+    ViewData["Title"] = $"Author #{Model.Id}";
+}
+
+<div class="text-center">
+    <table class="table chessed">
+        <thead class="bg-opacity-25 bg-primary">
+            <tr>
+                <th class="col-6">Property</th>
+                <th class="col-6">Value</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>@Html.DisplayNameFor(m => m.Id)</td>
+                <td>@Model.Id</td>
+            </tr>
+            <tr>
+                <td>@Html.DisplayNameFor(m => m.Name)</td>
+                <td>@Model.Name</td>
+            </tr>
+        </tbody>
+    </table>
+    @if (User.IsInRole("Admin"))
+    {
+        <div class="action-list">
+            <form method="get" asp-controller="Authors" asp-action="Update" asp-route-id="@Model.Id">
+                <input type="submit" class="btn btn-warning col-md-12" value="Edit">
+            </form>
+            <form method="post" asp-controller="Authors" asp-action="Delete" asp-route-id="@Model.Id"
+                onsubmit="return confirm('@($"Are you sure want to delete author {Model.Name}?")');">
+                <input type="submit" class="btn btn-danger col-md-12" value="Delete">
+            </form>
+        </div>
+    }
+    <br />
+    <div>
+        <form method="get" asp-controller="Authors" asp-action="Index">
+            <input type="submit" class="btn btn-secondary col-md-2" value="Return to Authors">
+        </form>
+    </div>
+</div>
